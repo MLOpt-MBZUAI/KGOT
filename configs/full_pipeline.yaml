@@ -1,0 +1,41 @@
+# KGOT Full Pipeline Configuration
+# Reference: ICLR 2026 paper, Appendix C
+
+score_training:
+  batch_size: 128
+  lr: 1.0e-4
+  epochs: 50
+  weight_decay: 0.01
+  sinkhorn_eps: 0.01
+  early_stopping: true
+
+pseudo_label:
+  sinkhorn_eps: 0.01        # entropic regularization
+  similarity_lambda: 0.1    # λ for similarity constraint
+  learning_rate: 1.0        # η for gradient step
+  max_iter: 50              # outer iterations
+  sinkhorn_iter: 50         # inner Sinkhorn iterations
+  threshold: 0.5            # δ for pseudo-label extraction
+  max_molecules: 10000      # M for score matrix
+  max_proteins: 5000        # N for score matrix
+
+kg_training:
+  model: "rotate"           # rotate, pairre, complex_ff, transe
+  embedding_dim: 256
+  margin: 6.0
+  lr: 1.0e-4
+  batch_size: 1024
+  epochs: 100
+  alpha: 0.1                # weight for L_pseudo
+  sampling: "1:1:1"         # real:negative:pseudo ratio
+
+data:
+  kg_path: "./data/kg_triples.pt"
+  mol_emb_path: "./data/mol_embeddings.pt"
+  prot_emb_path: "./data/prot_embeddings.pt"
+  train_pairs_path: "./data/train_pairs.pt"
+  test_pairs_path: "./data/test_pairs.pt"
+  mol_sim_path: "./data/mol_similarity.pt"
+  # DUD-E and LIT-PCBA for virtual screening eval
+  dude_path: "./data/dude/"
+  litpcba_path: "./data/litpcba/"

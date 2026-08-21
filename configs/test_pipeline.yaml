@@ -1,0 +1,24 @@
+data:
+  kg_path: ./data/kg
+kg_training:
+  alpha: 0.1
+  batch_size: 64
+  embedding_dim: 32
+  epochs: 10
+  lr: 0.001
+  margin: 6.0
+  model: rotate
+pseudo_label:
+  learning_rate: 0.5
+  max_iter: 5
+  max_molecules: 100
+  max_proteins: 50
+  similarity_lambda: 0.1
+  sinkhorn_eps: 0.05
+  sinkhorn_iter: 10
+  threshold: 0.3
+score_training:
+  batch_size: 32
+  epochs: 5
+  lr: 0.001
+  sinkhorn_eps: 0.05

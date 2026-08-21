@@ -1,0 +1,14 @@
+# KGOT reproduction — Python 3.10–3.12
+# Install:  python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+# For GPU, install the CUDA build of torch matching your driver (see PyTorch site).
+
+torch>=2.2            # KG embeddings + ESM-2 inference (GPU recommended)
+numpy>=1.24
+scipy>=1.10
+pandas>=2.0
+scikit-learn>=1.2
+rdkit>=2023.9         # Morgan fingerprints (pip package name: rdkit)
+transformers>=4.40    # ESM-2 protein language model (facebook/esm2_t33_650M_UR50D)
+tqdm>=4.65
+requests>=2.31
+pyyaml>=6.0

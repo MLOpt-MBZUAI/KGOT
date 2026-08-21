@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KGOT Poster — ICLR 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+  :root{ --kg:#1f6feb; --ot:#d9480f; --ink:#17242f; --line:#d5dee7; --soft:#f4f8fc; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#e9eef3; font-family:"Inter","Helvetica Neue",Arial,sans-serif; color:var(--ink); }
+  /* A0 landscape @ ~ 1189 x 841 mm, scaled to px */
+  .poster{ width:1680px; min-height:1188px; margin:24px auto; background:#fff; padding:36px 40px 28px;
+           box-shadow:0 6px 30px rgba(0,0,0,.15); }
+  header{ border-bottom:5px solid var(--kg); padding-bottom:14px; margin-bottom:18px; }
+  header .pill{ display:inline-block; background:#eef4ff; color:var(--kg); padding:3px 12px; border-radius:999px; font-size:15px; font-weight:600; }
+  header h1{ margin:8px 0 4px; font-size:52px; letter-spacing:-.5px; }
+  header h1 .kg{ color:var(--kg);} header h1 .ot{ color:var(--ot);}
+  header h2{ margin:0; font-size:24px; font-weight:500; color:#42566a; }
+  header .auth{ margin-top:8px; font-size:16px; color:#5b6b7b; }
+  .cols{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:22px; }
+  .panel{ background:var(--soft); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:20px; }
+  .panel h3{ margin:0 0 10px; font-size:22px; color:var(--ink); border-left:6px solid var(--ot); padding-left:10px; }
+  .panel.kg h3{ border-left-color:var(--kg); }
+  p,li{ font-size:16.5px; line-height:1.42; } ul{ margin:.2em 0 .2em 1.1em; padding:0;}
+  .kgt{ color:var(--kg); font-weight:700;} .ott{ color:var(--ot); font-weight:700;}
+  .eq{ background:#fff; border:1px dashed var(--line); border-radius:8px; padding:8px 10px; margin:8px 0; font-size:15px; text-align:center;}
+  .flow{ display:flex; flex-direction:column; gap:8px; }
+  .step{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:9px 12px; font-size:15px; position:relative; }
+  .step b{ display:block; font-size:16px; } .step.k{ border-left:6px solid var(--kg);} .step.o{ border-left:6px solid var(--ot);}
+  .down{ text-align:center; color:#9aa7b4; font-size:18px; line-height:.4; }
+  table{ width:100%; border-collapse:collapse; font-size:14.5px; margin-top:4px;}
+  th,td{ border:1px solid var(--line); padding:5px 7px; text-align:center; }
+  th{ background:#eaf0f6; } td:first-child,th:first-child{ text-align:left; }
+  .best{ background:#eaf6ec; font-weight:700; color:#1a7f37; }
+  .tag{ display:inline-block; background:#fff; border:1px solid var(--line); border-radius:999px; padding:2px 9px; font-size:13px; margin:2px 2px;}
+  .foot{ margin-top:10px; font-size:13px; color:#9aa7b4; text-align:center; }
+  .big{ font-size:19px; } .note{ font-size:13.5px; color:#5b6b7b; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <header>
+    <span class="pill">ICLR 2026</span>
+    <h1><span class="kg">KG</span><span class="ot">OT</span>: Unified <span class="kg">Knowledge Graph</span> &amp; <span class="ot">Optimal Transport</span> Pseudo-Labeling for Molecule–Protein Interaction Prediction</h1>
+    <h2>Turning unlabeled molecule–protein pairs into supervision through OT, over a unified biomedical knowledge graph</h2>
+    <div class="auth">Jiayu Qin · Zhengquan Luo · Guy Tadmor · Changyou Chen · David Zeevi · Zhiqiang Xu &nbsp;—&nbsp; University at Buffalo · MBZUAI · Weizmann Institute of Science</div>
+  </header>
+
+  <div class="cols">
+    <!-- COLUMN 1 -->
+    <div>
+      <div class="panel">
+        <h3>Motivation</h3>
+        <p>Molecule–protein interaction (MPI) prediction drives <b>drug discovery</b> and <b>function annotation</b>, yet two problems persist:</p>
+        <ul>
+          <li><b>① Label scarcity</b> — known pairs cover a tiny slice of real interactions.</li>
+          <li><b>② Ignored context</b> — feature-only models discard genes, pathways and functional annotations that signal interaction.</li>
+        </ul>
+        <p class="big"><span class="kgt">KG</span> supplies the missing biological context; <span class="ott">OT</span> converts unlabeled pairs into consistent pseudo-labels.</p>
+      </div>
+
+      <div class="panel kg">
+        <h3>A · Unified knowledge graph</h3>
+        <p>Six databases fused into one heterogeneous graph:</p>
+        <span class="tag">ChEBI + UniProt</span><span class="tag">KEGG</span><span class="tag">Gene Ontology</span>
+        <span class="tag">PFam</span><span class="tag">ENZYME</span><span class="tag">DrugBank</span>
+        <ul>
+          <li>8 node types (molecules, proteins, genes, GO terms, pathways, families, EC…)</li>
+          <li>~29 relation types over millions of edges</li>
+          <li>Nodes carry pretrained molecule / protein structural features</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h3>Pipeline</h3>
+        <div class="flow">
+          <div class="step k"><b>A · Integrate data</b>6 sources → unified KG</div>
+          <div class="down">▼</div>
+          <div class="step o"><b>B · Score function</b>train S(x,y) via inverse OT</div>
+          <div class="down">▼</div>
+          <div class="step o"><b>C · Pseudo-labels</b>Sinkhorn OT + similarity constraint on unlabeled pairs</div>
+          <div class="down">▼</div>
+          <div class="step k"><b>D · Augment &amp; predict</b>add pseudo-interaction edges → KG embeddings</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2 -->
+    <div>
+      <div class="panel">
+        <h3>B · Score via inverse optimal transport</h3>
+        <p>Fuse molecule &amp; protein embeddings with an MLP:</p>
+        <div class="eq">$$S(x,y)=W\big(f(x)\oplus g(y)\big),\ \ W:[512,256,1]$$</div>
+        <p>Align the predicted transport plan (cost $C_{pred}=1-S$) to the ground-truth plan of real interactions:</p>
+        <div class="eq">$$\mathcal{L}_{score}=\mathrm{KL}\!\left(T_{pred}\,\|\,T_{gt}\right)$$</div>
+      </div>
+
+      <div class="panel">
+        <h3>C · OT pseudo-labeling</h3>
+        <p>For unlabeled pairs, solve entropic OT with a similarity constraint:</p>
+        <div class="eq">$$\min_{T\in\Pi(r,c)}\ \langle T,C\rangle-\varepsilon H(T)+\lambda\,\Omega_{sim}(T)$$</div>
+        <ul>
+          <li><b>Sinkhorn–Knopp</b> solves it efficiently</li>
+          <li><span class="ott">Similarity constraint</span> keeps similar molecules’ labels consistent</li>
+          <li>Scores above threshold $\delta$ → high-confidence <b>pseudo-interactions</b></li>
+        </ul>
+      </div>
+
+      <div class="panel kg">
+        <h3>D · Multi-objective link prediction</h3>
+        <p>Inject $T$ as a new <b>pseudo-interaction</b> relation; train KG embeddings with a joint loss:</p>
+        <div class="eq">$$\mathcal{L}_{total}=\mathcal{L}_{KG}+\alpha\,\mathcal{L}_{pseudo}$$</div>
+        <p class="note">Model-agnostic — works with PairRE, RotatE, MuRE, TorusE, ComplEx-FF. “Filling in” likely interactions yields a more complete graph.</p>
+      </div>
+    </div>
+
+    <!-- COLUMN 3 -->
+    <div>
+      <div class="panel">
+        <h3>Virtual screening (zero-shot)</h3>
+        <p class="note"><b>DUD-E</b> — higher is better</p>
+        <table>
+          <tr><th>Model</th><th>AUROC</th><th>BEDROC</th><th>EF@0.5%</th><th>EF@1%</th></tr>
+          <tr><td>Glide-SP</td><td>76.70</td><td>40.70</td><td>19.39</td><td>16.18</td></tr>
+          <tr><td>DrugCLIP</td><td>80.93</td><td>50.52</td><td>38.07</td><td>31.89</td></tr>
+          <tr class="best"><td>KGOT</td><td>83.45</td><td>51.20</td><td>39.10</td><td>33.00</td></tr>
+        </table>
+        <p class="note" style="margin-top:8px"><b>LIT-PCBA</b> — harder benchmark</p>
+        <table>
+          <tr><th>Model</th><th>AUROC</th><th>BEDROC</th><th>EF@0.5%</th><th>EF@1%</th></tr>
+          <tr><td>Gnina</td><td>60.93</td><td>5.40</td><td>–</td><td>4.63</td></tr>
+          <tr><td>DrugCLIP</td><td>57.17</td><td>6.23</td><td>8.56</td><td>5.51</td></tr>
+          <tr class="best"><td>KGOT</td><td>62.45</td><td>6.52</td><td>9.12</td><td>5.90</td></tr>
+        </table>
+        <p class="note">Best on all metrics, with strong <b>early recognition</b> (EF) — what matters for hit prioritization.</p>
+      </div>
+
+      <div class="panel">
+        <h3>KG link prediction — Hits@K</h3>
+        <p class="note">without → <b>with</b> KGOT pseudo-labels (60K held-out edges)</p>
+        <table>
+          <tr><th>Method</th><th>Hits@1</th><th>Hits@3</th><th>Hits@5</th></tr>
+          <tr><td>PairRE</td><td>10.0→10.9</td><td>17.0→20.5</td><td>21.4→26.4</td></tr>
+          <tr><td>RotatE</td><td>48.5→52.0</td><td>61.6→63.9</td><td>66.6→68.0</td></tr>
+          <tr><td>MuRE</td><td>15.9→13.7</td><td>24.7→25.9</td><td>31.0→31.2</td></tr>
+          <tr class="best"><td>TorusE</td><td>49.4→53.4</td><td>64.2→65.2</td><td>70.0→74.9</td></tr>
+          <tr><td>ComplEx-FF</td><td>30.8→43.6</td><td>40.2→54.3</td><td>44.4→58.6</td></tr>
+        </table>
+        <p class="note">Consistent gains across models. TorusE best Hits@5 (74.9%); ComplEx-FF gains most from pseudo-labels (30.8→43.6).</p>
+      </div>
+
+      <div class="panel kg">
+        <h3>Conclusion</h3>
+        <ul>
+          <li>Unifying biological context + <span class="ott">OT pseudo-labeling</span> gives label-efficient MPI prediction.</li>
+          <li>New SOTA on DUD-E &amp; LIT-PCBA; consistent link-prediction gains.</li>
+          <li>Model-agnostic, scalable, and effective when labels are scarce.</li>
+        </ul>
+      </div>
+      <div class="foot">KGOT · Published as a conference paper at ICLR 2026</div>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+  renderMathInElement(document.body,{delimiters:[
+    {left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}]});
+});
+</script>
+</body>
+</html>

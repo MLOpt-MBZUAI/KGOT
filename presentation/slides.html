@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KGOT — Unified Knowledge Graph & Optimal Transport Pseudo-Labeling</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<style>
+  :root{ --kg:#1f6feb; --ot:#d9480f; --ink:#1b2733; }
+  .reveal { font-family: "Inter","Helvetica Neue",Arial,sans-serif; color:var(--ink); }
+  .reveal h1,.reveal h2,.reveal h3{ color:var(--ink); font-weight:700; letter-spacing:-.01em; text-transform:none; }
+  .reveal h1{ font-size:2.0em; } .reveal h2{ font-size:1.5em; } .reveal h3{ font-size:1.05em; }
+  .reveal section{ text-align:left; }
+  .reveal .center{ text-align:center; }
+  .reveal .small{ font-size:.72em; } .reveal .xs{ font-size:.6em; color:#5b6b7b; }
+  .kg{ color:var(--kg); font-weight:700; } .ot{ color:var(--ot); font-weight:700; }
+  .pill{ display:inline-block; padding:.15em .6em; border-radius:999px; background:#eef4ff; color:var(--kg); font-size:.7em; margin:.1em; }
+  .reveal table{ font-size:.62em; border-collapse:collapse; }
+  .reveal table th{ background:#f0f4f8; }
+  .reveal table td,.reveal table th{ border:1px solid #d5dee7; padding:.28em .5em; }
+  .best{ background:#eaf6ec; font-weight:700; color:#1a7f37; }
+  .flow{ display:flex; gap:.5em; justify-content:center; align-items:stretch; margin-top:.3em; flex-wrap:wrap; }
+  .box{ background:#f6f9fc; border:1px solid #d5dee7; border-radius:10px; padding:.5em .7em; font-size:.62em; width:150px; }
+  .box b{ display:block; font-size:1.05em; margin-bottom:.2em; }
+  .box.kgb{ border-top:4px solid var(--kg); } .box.otb{ border-top:4px solid var(--ot); }
+  .arrow{ align-self:center; color:#95a5b5; font-size:1.4em; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:1em; align-items:start; }
+  .card{ background:#f6f9fc; border:1px solid #d5dee7; border-radius:10px; padding:.6em .8em; }
+  .reveal ul{ margin-left:.6em; } .reveal li{ margin:.28em 0; }
+  .foot{ position:absolute; bottom:8px; left:16px; font-size:.4em; color:#9aa7b4; }
+  .eq{ background:#f6f9fc; border-left:4px solid var(--ot); padding:.4em .8em; border-radius:6px; margin:.4em 0; }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- 1 TITLE -->
+<section data-background-color="#ffffff">
+  <div class="center">
+    <span class="pill">ICLR 2026</span>
+    <h1><span class="kg">KG</span><span class="ot">OT</span></h1>
+    <h2 style="margin-top:0">Unified Knowledge Graph &amp; Optimal Transport<br>Pseudo-Labeling for Molecule–Protein Interaction Prediction</h2>
+    <p class="small">Jiayu Qin · Zhengquan Luo · Guy Tadmor · Changyou Chen · David Zeevi · Zhiqiang Xu</p>
+    <p class="xs">University at Buffalo · MBZUAI · Weizmann Institute of Science</p>
+  </div>
+</section>
+
+<!-- 2 PROBLEM -->
+<section>
+  <h2>Molecule–Protein Interaction (MPI) prediction</h2>
+  <p class="small">Predicting which molecules bind which proteins underpins <b>drug discovery</b> and <b>molecular function annotation</b>. Two obstacles limit current models:</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>① Label scarcity</h3>
+      <p class="small">Known molecule–protein pairs cover only a tiny fraction of biologically relevant interactions — supervised models are starved of positives.</p>
+    </div>
+    <div class="card">
+      <h3>② Ignored biological context</h3>
+      <p class="small">Most methods use only molecular/protein features and discard the rich context — genes, pathways, functional annotations — that hints at interaction.</p>
+    </div>
+  </div>
+  <p class="small center" style="margin-top:.8em"><b class="kg">Idea:</b> integrate heterogeneous biology into one knowledge graph, and use <b class="ot">optimal transport</b> to turn unlabeled pairs into high-quality pseudo-labels.</p>
+  <div class="foot">KGOT · ICLR 2026</div>
+</section>
+
+<!-- 3 CONTRIBUTIONS -->
+<section>
+  <h2>Contributions</h2>
+  <ul class="small">
+    <li><b class="kg">Unified biomedical KG.</b> Six data sources (ChEBI, KEGG, Gene Ontology, PFam, ENZYME, DrugBank) integrated into a single graph spanning drugs, proteins, genes, pathways and functional annotations — millions of relations providing complementary context.</li>
+    <li><b class="ot">OT-based pseudo-labeling.</b> Label assignment is cast as a <i>point-set matching</i> problem solved with optimal transport, yielding pseudo-labels consistent with the global distribution of known interactions.</li>
+    <li><b>State-of-the-art results.</b> Across virtual screening (DUD-E, LIT-PCBA) and KG link prediction, KGOT improves AUROC, early-recognition metrics and generalization to unseen targets.</li>
+  </ul>
+  <div class="foot">KGOT · ICLR 2026</div>
+</section>
+
+<!-- 4 PIPELINE -->
+<section>
+  <h2>Framework at a glance</h2>
+  <div class="flow">
+    <div class="box kgb"><b>A · Data integration</b>6 biological databases → one unified knowledge graph</div>
+    <div class="arrow">→</div>
+    <div class="box otb"><b>B · Score function</b>S(x,y) trained with inverse optimal transport (IOT)</div>
+    <div class="arrow">→</div>
+    <div class="box otb"><b>C · Pseudo-labels</b>Sinkhorn OT + similarity constraint on unlabeled pairs</div>
+    <div class="arrow">→</div>
+    <div class="box kgb"><b>D · KG augmentation</b>add <i>pseudo-interaction</i> edges → train KG embeddings</div>
+  </div>
+  <p class="small center" style="margin-top:1em">Pseudo-labels bridge disparate modalities, converting MPI into a <b>semi-supervised</b> problem that exploits both labeled and unlabeled data.</p>
+  <div class="foot">KGOT · ICLR 2026</div>
+</section>
+
+<!-- 5 UNIFIED KG -->
+<section>
+  <h2>A · The unified knowledge graph</h2>
+  <div class="grid2">
+    <div class="card small">
+      <b>Six integrated sources</b>
+      <ul>
+        <li><b>ChEBI + UniProt</b> — catalytic activity (molecule↔protein)</li>
+        <li><b>KEGG</b> — pathways, modules, compounds, orthology</li>
+        <li><b>Gene Ontology</b> — biological process / component / function</li>
+        <li><b>PFam</b> — protein family membership</li>
+        <li><b>ENZYME</b> — enzyme commission relations</li>
+        <li><b>DrugBank</b> — drug–target interactions</li>
+      </ul>
+    </div>
+    <div class="card small">
+      <b>One heterogeneous graph</b>
+      <ul>
+        <li>8 node types: molecules, proteins, genes, GO terms, pathways, families, EC numbers, …</li>
+        <li>~29 edge types over millions of relations</li>
+        <li>Nodes carry pretrained structural features (molecule &amp; protein encoders)</li>
+      </ul>
+      <p class="xs">The graph supplies the biological context that pure feature-based models discard.</p>
+    </div>
+  </div>
+  <div class="foot">KGOT · ICLR 2026</div>
+</section>
+
+<!-- 6 SCORE + IOT -->
+<section>
+  <h2>B · Interaction score via inverse optimal transport</h2>
+  <p class="small">A scoring MLP fuses molecule and protein embeddings:</p>
+  <div class="eq">$$ S(x,y) = W\big(f(x)\;\oplus\;g(y)\big),\qquad W:[512,256,1]\text{ MLP} $$</div>
+  <p class="small">Training takes an <b class="ot">inverse-OT</b> view: for a batch, the ground-truth interactions define a target transport plan $T_{gt}$; the model’s predicted plan $T_{pred}$ (from cost $C_{pred}=1-S$) is aligned to it via a KL objective.</p>
+  <div class="eq">$$ \mathcal{L}_{score} = \mathrm{KL}\!\left(T_{pred}\,\|\,T_{gt}\right) $$</div>
+  <p class="xs">This teaches the score to reproduce the transport structure of real interactions, not just point-wise labels.</p>
+  <div class="foot">KGOT · ICLR 2026</div>
+</section>
+
+<!-- 7 PSEUDO LABELS -->
+<section>
+  <h2>C · OT pseudo-labeling of unlabeled pairs</h2>
+  <p class="small">Over the large pool of unlabeled molecule–protein pairs, define cost $C_{ij}=1-S_{ij}$ and solve a regularized OT problem for a soft assignment plan $T\in\mathbb{R}^{M\times N}$:</p>
+  <div class="eq">$$ \min_{T\in\Pi(r,c)}\ \langle T,C\rangle \;-\; \varepsilon\,H(T)\;+\;\lambda\,\Omega_{sim}(T) $$</div>
+  <ul class="small">
+    <li><b>Sinkhorn–Knopp</b> iterations solve the entropic OT efficiently.</li>
+    <li><b>Similarity constraint</b> $\Omega_{sim}$ encourages similar molecules to receive consistent pseudo-labels.</li>
+    <li>Entries above threshold $\delta$ become high-confidence <b class="ot">pseudo-interactions</b>.</li>
+  </ul>
+  <p class="xs">Result: a principled way to mine likely interactions that respect the global distribution of known ones.</p>
+  <div class="foot">KGOT · ICLR 2026</div>
+</section>
+
+<!-- 8 KG AUGMENT + LOSS -->
+<section>
+  <h2>D · KG augmentation &amp; multi-objective link prediction</h2>
+  <p class="small">The pseudo-label matrix $T$ is injected into the KG as a new relation type — <b class="ot">pseudo-interaction</b> — alongside all observed edges. A KG embedding model is then trained with a joint objective:</p>
+  <div class="eq">$$ \mathcal{L}_{total} = \mathcal{L}_{KG} \;+\; \alpha\,\mathcal{L}_{pseudo} $$</div>
+  <p class="small">balancing graph structure with data-driven pseudo-supervision. The framework is <b>model-agnostic</b> — evaluated with PairRE, RotatE, MuRE, TorusE and ComplEx-FF.</p>
+  <p class="xs">“Filling in” likely-but-unobserved interactions yields a more complete graph and better retrieval of held-out links.</p>
+  <div class="foot">KGOT · ICLR 2026</div>
+</section>
+
+<!-- 9 RESULTS DUD-E -->
+<section>
+  <h2>Results · DUD-E virtual screening (zero-shot)</h2>
+  <table>
+    <tr><th>Model</th><th>AUROC%</th><th>BEDROC%</th><th>EF@0.5%</th><th>EF@1%</th><th>EF@2%</th></tr>
+    <tr><td>Glide-SP</td><td>76.70</td><td>40.70</td><td>19.39</td><td>16.18</td><td>7.23</td></tr>
+    <tr><td>Vina</td><td>71.60</td><td>–</td><td>9.13</td><td>7.32</td><td>4.44</td></tr>
+    <tr><td>Planet</td><td>71.60</td><td>–</td><td>10.23</td><td>8.83</td><td>5.40</td></tr>
+    <tr><td>DrugCLIP</td><td>80.93</td><td>50.52</td><td>38.07</td><td>31.89</td><td>10.66</td></tr>
+    <tr class="best"><td>KGOT</td><td>83.45</td><td>51.20</td><td>39.10</td><td>33.00</td><td>11.20</td></tr>
+  </table>
+  <p class="small" style="margin-top:.6em">Best across <b>every</b> metric — including strong <b>early recognition</b> (high EF), which matters most for prioritizing hits in screening.</p>
+  <div class="foot">KGOT · ICLR 2026 · Table 1</div>
+</section>
+
+<!-- 10 RESULTS LIT-PCBA -->
+<section>
+  <h2>Results · LIT-PCBA virtual screening (zero-shot)</h2>
+  <table>
+    <tr><th>Model</th><th>AUROC%</th><th>BEDROC%</th><th>EF@0.5%</th><th>EF@1%</th><th>EF@5%</th></tr>
+    <tr><td>Glide-SP</td><td>53.15</td><td>4.00</td><td>3.17</td><td>3.41</td><td>2.01</td></tr>
+    <tr><td>Gnina</td><td>60.93</td><td>5.40</td><td>–</td><td>4.63</td><td>–</td></tr>
+    <tr><td>BigBind</td><td>60.80</td><td>–</td><td>–</td><td>3.82</td><td>–</td></tr>
+    <tr><td>DrugCLIP</td><td>57.17</td><td>6.23</td><td>8.56</td><td>5.51</td><td>2.27</td></tr>
+    <tr class="best"><td>KGOT</td><td>62.45</td><td>6.52</td><td>9.12</td><td>5.90</td><td>2.50</td></tr>
+  </table>
+  <p class="small" style="margin-top:.6em">On this harder benchmark KGOT again leads all metrics — AUROC 62.45 vs 60.93 (Gnina), EF@0.5% 9.12 vs 8.56 — showing robustness of the OT-guided pseudo-labeling.</p>
+  <div class="foot">KGOT · ICLR 2026 · Table 2</div>
+</section>
+
+<!-- 11 RESULTS LINK PREDICTION -->
+<section>
+  <h2>Results · KG link prediction (Hits@K)</h2>
+  <p class="small">Pseudo-label augmentation helps <b>every</b> KG embedding model (60K held-out molecule–protein edges):</p>
+  <table>
+    <tr><th>Method</th><th>Hits@1</th><th>Hits@3</th><th>Hits@5</th></tr>
+    <tr><td>PairRE</td><td>10.0 → <b>10.9</b></td><td>17.0 → 20.5</td><td>21.4 → 26.4</td></tr>
+    <tr><td>RotatE</td><td>48.5 → <b>52.0</b></td><td>61.6 → 63.9</td><td>66.6 → 68.0</td></tr>
+    <tr><td>MuRE</td><td>15.9 → 13.7</td><td>24.7 → 25.9</td><td>31.0 → 31.2</td></tr>
+    <tr class="best"><td>TorusE</td><td>49.4 → 53.4</td><td>64.2 → 65.2</td><td>70.0 → <b>74.9</b></td></tr>
+    <tr><td>ComplEx-FF</td><td>30.8 → <b>43.6</b></td><td>40.2 → 54.3</td><td>44.4 → 58.6</td></tr>
+  </table>
+  <p class="xs" style="margin-top:.5em"><i>x → y</i>: without → with KGOT pseudo-labels. TorusE reaches the best Hits@5 (74.9%); ComplEx-FF gains most from pseudo-labels (Hits@1 30.8→43.6).</p>
+  <div class="foot">KGOT · ICLR 2026 · Table 3</div>
+</section>
+
+<!-- 12 TAKEAWAYS -->
+<section>
+  <h2>Takeaways</h2>
+  <ul class="small">
+    <li><b class="kg">Context matters.</b> Unifying molecular, protein, gene and pathway data into one KG injects biological signal that feature-only models miss.</li>
+    <li><b class="ot">OT pseudo-labeling works.</b> Casting label assignment as optimal transport turns abundant unlabeled pairs into consistent supervision — model-agnostic and consistently beneficial.</li>
+    <li><b>Strong, general results.</b> New state of the art on DUD-E and LIT-PCBA virtual screening, and consistent link-prediction gains across five KG embedding models.</li>
+    <li><b>Scalable &amp; label-efficient.</b> A practical route to MPI prediction when labeled interactions are scarce.</li>
+  </ul>
+  <p class="center small" style="margin-top:.8em"><span class="kg">Knowledge Graph</span> + <span class="ot">Optimal Transport</span> = label-efficient molecule–protein interaction prediction.</p>
+  <div class="foot">KGOT · ICLR 2026</div>
+</section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/math/math.js"></script>
+<script>
+Reveal.initialize({ hash:true, slideNumber:'c/t', width:1180, height:740, margin:0.06,
+  plugins:[ RevealMath.KaTeX ] });
+</script>
+</body>
+</html>

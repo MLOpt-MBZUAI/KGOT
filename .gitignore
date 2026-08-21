@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.idea/
+.vscode/
+.DS_Store
+data/raw/
+data/kg/
+data/embeddings/
+outputs/
+logs/
+checkpoints/
+wandb/
+*.ckpt
+
